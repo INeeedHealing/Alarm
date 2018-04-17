@@ -1,25 +1,26 @@
 package alarm;
 
+import alarm.UI.EnterPassword;
 import java.awt.*;
 import java.awt.TrayIcon.MessageType;
 
-import alarm.UI.options;
+import alarm.UI.Options;
 import java.util.LinkedList;
 import java.util.concurrent.TimeUnit;
 import javax.swing.JFrame;
 
 public class Alarm {
 
-    public static LinkedList<String> resP = new LinkedList<>();
-    public static boolean killPs = false;
-    public static int avlTime = 190;
-    public static boolean remPs = false;
-    public static int freqPs = 14;
-    public static boolean rem = false;
-    public static int freq = 30;
-    public static boolean remTime;
-    public static int remUhrzeit;
-    public static boolean needPass;
+    public static LinkedList<String> resP = new LinkedList<>(); //Speichert Programmnamen
+    public static boolean killPs = false;   //Ob Ps geschlossen werden sollen
+    public static int avlTime = 190;        //Wie viel Zeit mit Ps
+    public static boolean remPs = false;    //Ob Nach Zeit in Ps erinnert werden soll
+    public static int freqPs = 14;          //wie oft in min
+    public static boolean rem = false;      //ob nach Zeit am Pc erinnert werden soll
+    public static int freq = 30;            //wie oft in min
+    public static boolean needPass = false; //ob Passwort benötigt wird
+    public static String password;
+    public static boolean passWisRight = false;
 
     //static final String[] OPTIONNAMES = {"killPs", "avlTime", "remPs", "freqPs", "rem", "freq", "rem15", "needPass"};
     public static void main(String args[]) throws Exception {
@@ -39,7 +40,8 @@ public class Alarm {
 //        p.setVisible(true);
 //</editor-fold>
         String warnig = "Vielleicht solltest du aufhören.";
-
+        System.out.println(password);
+        
         //!!!Achtung nur Temporär!!!
         resP.add("witcher3.exe");
         resP.add("FortniteClient-Win64-Shipping.exe");
@@ -50,14 +52,27 @@ public class Alarm {
         boolean pIsRunning = false;
         boolean remPsSwOnce = true;
         StopWatch remPsSw = new StopWatch();
-        
+
         boolean rem15Once = true;
         boolean rem2Once = true;
 
         Alarm al = new Alarm();
-        options op = new options();
-        op.setVisible(true);
-        op.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        if (needPass && password != null) {
+            EnterPassword eP = new EnterPassword();
+            eP.setVisible(true);
+            eP.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+            while (!passWisRight) {
+                TimeUnit.SECONDS.sleep(1);
+            }
+            passWisRight = false;
+            Options op = new Options();
+            op.setVisible(true);
+            op.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        } else {
+            Options op = new Options();
+            op.setVisible(true);
+            op.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        }
 
         while (true) {
             if (rem) {
@@ -122,14 +137,14 @@ public class Alarm {
                     al.displayTray(titel, "Beende deine jetzige Aktivität.");
                     rem15Once = false;
                 }
-                
+
                 if (freqPs - remPsSw.getElapsedTimeMins() < 2 && rem2Once) {
                     String titel = "Du musst in 2 min aufhören zu Spielen";
                     al.displayTray(titel, "Beende deine jetzige Aktivität!");
                     rem15Once = false;
                 }
             }
-            
+
             TimeUnit.SECONDS.sleep(1);
         }
 
